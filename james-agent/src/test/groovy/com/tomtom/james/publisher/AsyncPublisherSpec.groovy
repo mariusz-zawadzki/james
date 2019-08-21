@@ -36,13 +36,13 @@ class AsyncPublisherSpec extends Specification {
 
     def "Should publish events via the delegate in the background"() {
         given:
-        def publisher = new AsyncPublisher(delegate, "bgthread-%d", 5, 1000)
+        def publisher = new AsyncPublisher(delegate, "bgthread-%d", 5, 1000, 2)
 
         when:
         10.times {
             publisher.publish(new Event(""))
         }
-        await().atMost(1, TimeUnit.SECONDS).until { callerThreadNames.size() == 10 }
+        await().atMost(2, TimeUnit.SECONDS).until { callerThreadNames.size() == 10 }
         publisher.close()
 
         then:

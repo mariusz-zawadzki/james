@@ -66,39 +66,53 @@ class AsyncScriptEngineSpec extends Specification {
 
     def "Should invoke success handler via the delegate in the background"() {
         given:
-        def scriptEngine = new AsyncScriptEngine(delegate, 5, 100)
+        def scriptEngine = getAsyncEngine()
 
         when:
-        10.times {
+        howManyTimes().times {
             scriptEngine.invokeSuccessHandler(informationPoint, origin,
                     [param1, param2], instance, currentThread, duration, callStack, returnValue, CompletableFuture.completedFuture(null))
         }
-        await().atMost(5, TimeUnit.SECONDS).until { successCallerThreadNames.size() == 10 }
+        await().atMost(5, TimeUnit.SECONDS).until { successCallerThreadNames.size() == howManyTimes() }
 
         then:
-        successCallerThreadNames.size() == 10
-        successCallerThreadNames.findAll({ it.contains("async-script-engine-thread-pool") }).size() == 10
+        successCallerThreadNames.size() == howManyTimes()
+        successCallerThreadNames.findAll({ it.contains("async-script-engine-thread-pool") }).size() ==  howManyTimes()
+    }
+
+    protected int howManyTimes() {
+        1000
+    }
+
+    private AsyncScriptEngine getAsyncEngine() {
+        new AsyncScriptEngine(delegate, 5, 1000, framgentation())
+    }
+
+    protected int framgentation() {
+        1
     }
 
     def "Should invoke error handler via the delegate in the background"() {
         given:
-        def scriptEngine = new AsyncScriptEngine(delegate, 5, 100)
+        def scriptEngine = getAsyncEngine()
 
         when:
-        10.times {
+        howManyTimes().times {
             scriptEngine.invokeErrorHandler(informationPoint, origin,
                     [param1, param2], instance, currentThread, duration, callStack, errorCause, CompletableFuture.completedFuture(null))
         }
-        await().atMost(5, TimeUnit.SECONDS).until { errorCallerThreadNames.size() == 10 }
+        await().atMost(10, TimeUnit.SECONDS).until {
+            println(errorCallerThreadNames.size())
+            errorCallerThreadNames.size() == howManyTimes() }
 
         then:
-        errorCallerThreadNames.size() == 10
-        errorCallerThreadNames.findAll({ it.contains("async-script-engine-thread-pool") }).size() == 10
+        errorCallerThreadNames.size() ==  howManyTimes()
+        errorCallerThreadNames.findAll({ it.contains("async-script-engine-thread-pool") }).size() ==  howManyTimes()
     }
 
     def "Shoud invoke prepare context in current thread and allow access to it in background thread handler"() {
         given:
-        def scriptEngine = new AsyncScriptEngine(delegate, 5, 100)
+        def scriptEngine = getAsyncEngine()
 
         when:
         threadData.set("greetings from " + currentThread.getId())

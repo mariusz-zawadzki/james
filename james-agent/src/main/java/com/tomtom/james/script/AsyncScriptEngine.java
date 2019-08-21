@@ -32,6 +32,8 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
+import static com.tomtom.james.queue.QueueFactory.getJobQueue;
+
 class AsyncScriptEngine implements ScriptEngine, QueueBacked {
 
     private static final Logger LOG = Logger.getLogger(AsyncScriptEngine.class);
@@ -41,11 +43,11 @@ class AsyncScriptEngine implements ScriptEngine, QueueBacked {
     private final ExecutorService executorService;
     private final AtomicInteger droppedJobsCount = new AtomicInteger();
 
-    AsyncScriptEngine(ScriptEngine delegate, int numberOfWorkers, int jobQueueSize) {
+    AsyncScriptEngine(ScriptEngine delegate, int numberOfWorkers, int jobQueueSize, int asyncJobQueueFragments) {
         this.delegate = Objects.requireNonNull(delegate);
         this.executorService = MoreExecutors.createNamedDaemonExecutorService(
                 "async-script-engine-thread-pool-%d", numberOfWorkers);
-        this.jobQueue = new ArrayBlockingQueue<>(jobQueueSize, true);
+        this.jobQueue = getJobQueue(jobQueueSize, asyncJobQueueFragments);
         LOG.trace(() -> "Script engine worker pool created with " + numberOfWorkers + " threads");
         IntStream.range(0, numberOfWorkers).forEach(i ->
                 executorService.submit(new AsyncRunner<>(jobQueue)));

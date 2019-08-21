@@ -16,6 +16,7 @@
 
 package com.tomtom.james.util
 
+import org.awaitility.core.ConditionTimeoutException
 import spock.lang.Specification
 
 import java.util.concurrent.ArrayBlockingQueue

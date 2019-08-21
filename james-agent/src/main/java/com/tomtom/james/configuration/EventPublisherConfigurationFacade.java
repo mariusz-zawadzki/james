@@ -55,4 +55,11 @@ class EventPublisherConfigurationFacade implements EventPublisherConfiguration {
     public Optional<StructuredConfiguration> getProperties() {
         return structuredConfiguration.get("properties");
     }
+
+    @Override
+    public int getAsyncJobQueueFragments() {
+        return structuredConfiguration.get("asyncJobQueueFragments")
+                .map(StructuredConfiguration::asInteger)
+                .orElse(1);
+    }
 }

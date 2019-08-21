@@ -26,12 +26,13 @@ import com.tomtom.james.util.AsyncRunner;
 import com.tomtom.james.util.MoreExecutors;
 
 import java.util.Objects;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
+
+import static com.tomtom.james.queue.QueueFactory.getJobQueue;
 
 class AsyncPublisher implements EventPublisher, QueueBacked {
 
@@ -44,10 +45,15 @@ class AsyncPublisher implements EventPublisher, QueueBacked {
     private final ExecutorService executorService;
     private final AtomicInteger droppedJobsCount = new AtomicInteger();
 
-    AsyncPublisher(EventPublisher delegate, String threadPoolNameFormat, int numberOfWorkers, int maxQueueCapacity) {
+    AsyncPublisher(EventPublisher delegate,
+                   String threadPoolNameFormat,
+                   int numberOfWorkers,
+                   int maxQueueCapacity,
+                   int fragments) {
         this.delegate = Objects.requireNonNull(delegate);
         this.executorService = MoreExecutors.createNamedDaemonExecutorService(threadPoolNameFormat, numberOfWorkers);
-        this.jobQueue = new ArrayBlockingQueue<>(maxQueueCapacity, true);
+
+        this.jobQueue = getJobQueue(maxQueueCapacity, fragments);
         LOG.trace(() -> "Async worker pool for " + delegate.getId() + " created with " + numberOfWorkers +
                 (numberOfWorkers > 1 ? " threads" : " thread"));
         IntStream.range(0, numberOfWorkers).forEach(i ->

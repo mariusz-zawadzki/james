@@ -33,7 +33,8 @@ public class ScriptEngineFactory {
         AsyncScriptEngine engine = new AsyncScriptEngine(
                 new GroovyScriptEngine(publisher, toolkitManager),
                 configuration.getScriptEngineConfiguration().getAsyncWorkers(),
-                configuration.getScriptEngineConfiguration().getMaxAsyncJobQueueCapacity());
+                configuration.getScriptEngineConfiguration().getMaxAsyncJobQueueCapacity(),
+                configuration.getScriptEngineConfiguration().getAsyncJobQueueFragments());
         ScriptEngineSupplier.register(engine);
         return engine;
     }

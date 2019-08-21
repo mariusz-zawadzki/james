@@ -40,4 +40,11 @@ class ScriptEngineConfigurationFacade implements ScriptEngineConfiguration {
                 .orElse(10_000);
     }
 
+    @Override
+    public int getAsyncJobQueueFragments() {
+        return configuration.get("asyncJobQueueFragments")
+                .map(StructuredConfiguration::asInteger)
+                .orElse(1);
+    }
+
 }

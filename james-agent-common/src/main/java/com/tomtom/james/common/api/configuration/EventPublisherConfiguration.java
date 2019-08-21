@@ -26,4 +26,5 @@ public interface EventPublisherConfiguration extends Identifiable {
     int getMaxAsyncJobQueueCapacity();
     Optional<StructuredConfiguration> getProperties();
 
+    int getAsyncJobQueueFragments();
 }

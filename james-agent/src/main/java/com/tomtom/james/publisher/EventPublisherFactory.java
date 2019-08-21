@@ -62,7 +62,8 @@ public class EventPublisherFactory {
             EventPublisher asyncWrapper = new AsyncPublisher(eventPublisher.get(),
                     threadPoolNameFormat,
                     configuration.getAsyncWorkers(),
-                    configuration.getMaxAsyncJobQueueCapacity());
+                    configuration.getMaxAsyncJobQueueCapacity(),
+                    configuration.getAsyncJobQueueFragments());
             return Optional.of(asyncWrapper);
         } else {
             LOG.warn(() -> "Error loading event publisher " + configuration.getId() + ", plugin not found");

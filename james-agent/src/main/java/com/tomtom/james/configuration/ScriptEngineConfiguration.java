@@ -20,5 +20,6 @@ public interface ScriptEngineConfiguration {
 
     int getAsyncWorkers();
     int getMaxAsyncJobQueueCapacity();
+    int getAsyncJobQueueFragments();
 
 }
