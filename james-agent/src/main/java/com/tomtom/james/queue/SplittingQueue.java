@@ -27,7 +27,7 @@ public class SplittingQueue<E> extends ForwardingBlockingQueue<E> {
     }
 
     private int nextQueue() {
-        return currentCounter++%fragments;
+        return Math.abs(currentCounter++)%fragments;
     }
 
     @Override

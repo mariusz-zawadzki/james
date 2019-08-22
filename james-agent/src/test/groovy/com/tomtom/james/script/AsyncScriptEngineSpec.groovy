@@ -73,7 +73,7 @@ class AsyncScriptEngineSpec extends Specification {
             scriptEngine.invokeSuccessHandler(informationPoint, origin,
                     [param1, param2], instance, currentThread, duration, callStack, returnValue, CompletableFuture.completedFuture(null))
         }
-        await().atMost(5, TimeUnit.SECONDS).until { successCallerThreadNames.size() == howManyTimes() }
+        await().atMost(10, TimeUnit.SECONDS).until { successCallerThreadNames.size() == howManyTimes() }
 
         then:
         successCallerThreadNames.size() == howManyTimes()
@@ -110,7 +110,7 @@ class AsyncScriptEngineSpec extends Specification {
         errorCallerThreadNames.findAll({ it.contains("async-script-engine-thread-pool") }).size() ==  howManyTimes()
     }
 
-    def "Shoud invoke prepare context in current thread and allow access to it in background thread handler"() {
+    def "Should invoke prepare context in current thread and allow access to it in background thread handler"() {
         given:
         def scriptEngine = getAsyncEngine()
 
@@ -120,7 +120,8 @@ class AsyncScriptEngineSpec extends Specification {
         def context = scriptEngine.invokePrepareContext(informationPoint, origin, [param1, param2], instance, currentThread, key)
         MethodExecutionContextHelper.storeContextAsync(key, context)
         scriptEngine.invokeSuccessHandler(informationPoint, origin, [param1, param2], instance, currentThread, duration, callStack, returnValue, MethodExecutionContextHelper.getContextAsync(key))
-        await().atMost(5, TimeUnit.SECONDS).until{ successCallerThreadNames.size() == 1 }
+        await().atMost(10, TimeUnit.SECONDS).until{ successCallerThreadNames.size() == 1 }
+        await().atMost(10, TimeUnit.SECONDS).until{ context == contextValue }
 
         then:
         context == contextValue
