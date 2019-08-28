@@ -11,6 +11,7 @@ public class SplittingQueue<E> extends ForwardingBlockingQueue<E> {
 
     ArrayBlockingQueue<E>[] queues;
     private int fragments;
+    int currentCounter = 0;
 
     public SplittingQueue(int fragments, int singleSize, boolean fair) {
         queues = new ArrayBlockingQueue[fragments];
@@ -20,14 +21,13 @@ public class SplittingQueue<E> extends ForwardingBlockingQueue<E> {
         }
     }
 
-    int currentCounter = 0;
     private ArrayBlockingQueue<E> getQueue(){
         return queues[nextQueue()];
 
     }
 
     private int nextQueue() {
-        return Math.abs(currentCounter++)%fragments;
+        return Math.abs(currentCounter++%fragments);
     }
 
     @Override
